@@ -1,0 +1,64 @@
+---
+title: "DATA2020 final project"
+author: "Yingyi Zhu"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+```{r}
+library(tidyverse)
+library(haven)
+```
+
+```{r}
+wave_5 <- read_dta("/Users/yingyizhu/Desktop/DATA2020/FFdata/wave5/FF_wave5_2020v2.dta")
+wave_6 <- read_dta("/Users/yingyizhu/Desktop/DATA2020/FFdata/wave6/FF_wave6_2020v2.dta")
+```
+
+```{r}
+colnames(wave_5)
+colnames(wave_6)
+```
+
+```{r}
+clean_data <- wave_5 %>%
+  full_join(wave_6, by = "idnum") %>%
+  select('k6b22b', 'k5a2c', 'k5a2a', 'k5a2d', 'k5a2e', 'k5a2f',
+         'k5a3a', 'k5a3b', 'k5a3c', 'k5a3d', 'k5a3e', 'k5a3f', 'k6b4a', 
+         'k6b4b', 'k6b4c', 'k6b4d', 'k6b4e', 'k6b4f', 'k6b4g', 'k6b5a', 
+         'k6b5b', 'k6b5c', 'k5a4a', 'k5a4b', 'k5a4c', 'k5a4d', 'k5a4e',
+         'k5a4f', 'k5b2a', 'k5b2b', 'k5b2c', 'k5b2d', 'k6b21d', 'k6b21b',
+         'k5e1a', 'k5e1b', 'k5e1c', 'k5e1d', 'k5f1a', 'k5f1b', 'k5f1c',
+         'k5f1d', 'k5f1e', 'k5f1f', 'k5f1g', 'k5f1h', 'k5f1i', 'k5f1j',
+         'k5f1q', 'p5l17_101', 'p5q3o', 't5b3c', 'k6b20e', 'k6b32b',
+         'p6j37', 'p6j38', 'p6j39', 'p6j40', 'p6j41', 'p6j42', 'p6j43',
+         'p6j44', 'p6j45', 'p6j46', 'p6j47', 't5b3a', 't5b3b', 't5b3d',
+         't5b3e', 't5b3f', 't5b3g', 't5b3h', 't5b3i', 't5b3j', 't5b3k',
+         't5b3l', 'k5e2a', 'k5e2b', 'k5e2c', 'k5e2d', 'cp6pint') %>%
+  filter(cp6pint == 1) %>% # removing all individuals who failed to participate
+  mutate(bully = rowMeans(select(., k5e2a, k5e2b, k5e2c, k5e2d), 
+                          na.rm = TRUE)) %>%
+  select(-k5e2a, -k5e2b, -k5e2c, -k5e2d, -cp6pint)
+
+clean_data_no_negative <- clean_data %>%
+  filter(if_all(.cols = everything(), ~ . >= 0))
+
+# remove所有含有negative values的rows之后，只剩一个obs了哈哈哈哈
+# remove之前总共有4898 obs
+```
+
+```{r}
+attributes(wave_6$k5e2a) 
+```
+
+
+
+```{r}
+head(wave_6$'k5e2a')
+```
+
